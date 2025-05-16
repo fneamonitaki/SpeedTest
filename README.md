@@ -1,5 +1,6 @@
 # SpeedTest
-how to run: \m
+how to run: \n
+
 open 2 terminals
 in first terminal write:
 gcc server.c -o server
