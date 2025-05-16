@@ -7,7 +7,7 @@
 #include <sys/time.h>
 
 #define PORT 12345
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE (64 * 1024)
 #define TEST_DURATION 30
 #define INTERVAL 2
 #define SA struct sockaddr
