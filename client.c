@@ -7,7 +7,8 @@
 #include <time.h>
 #include <sys/time.h>
 
-#define SERVER_IP "147.27.116.242" // <-- CHANGE to your server's IP
+//#define SERVER_IP "147.27.116.242" // <-- CHANGE to your server's IP
+#define SERVER_IP "127.0.01.1" //;ocal IP for demo
 #define SERVER_PORT 12345
 #define BUFFER_SIZE (64 * 1024)
 #define TEST_DURATION 30  // seconds
