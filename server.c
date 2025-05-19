@@ -8,7 +8,7 @@
 
 #define PORT 5555
 #define BUFFER_SIZE (131072) //o server lambanei ara to read
-#define TEST_DURATION 30
+#define TEST_DURATION 32
 #define INTERVAL 2
 #define SA struct sockaddr
 
@@ -42,12 +42,17 @@ void handle_client(int client_fd) {
 
         if (elapsed_interval >= INTERVAL) {
             double mbps = bytes_to_mbps(received_this_interval, elapsed_interval);
-            printf("[SERVER] Received %.2f Mbps in last %.1f sec\n", mbps, elapsed_interval);
+            static int interval_number = 0;
+            printf("[SERVER] %2d–%2ds: Received %.2f Mbps\n",
+                interval_number * INTERVAL,
+                (interval_number + 1) * INTERVAL,
+                mbps);
+            interval_number++;
             received_this_interval = 0;
             gettimeofday(&interval_start, NULL);
-        }
+}
 
-        if (elapsed_total >= TEST_DURATION)
+        if (elapsed_total > TEST_DURATION)
             break;
     }
 

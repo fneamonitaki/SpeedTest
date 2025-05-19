@@ -8,8 +8,8 @@
 #include <sys/time.h>
 
 //#define SERVER_IP "147.27.116.242" // <-- CHANGE to your server's IP
-//#define SERVER_IP "127.0.01.1" //local IP for demo
-#define SERVER_IP "192.168.1.5" //local IP for demo
+#define SERVER_IP "127.0.01.1" //local IP for demo
+//#define SERVER_IP "192.168.1.5" //local IP for demo
 #define SERVER_PORT 5555
 #define BUFFER_SIZE (16384) // o client stelnei ara to write
 #define TEST_DURATION 30  // seconds
@@ -77,10 +77,15 @@ int main() {
 
         if (elapsed_interval >= INTERVAL) {
             double mbps = bytes_to_mbps(sent_this_interval, elapsed_interval);
-            printf("[CLIENT] Sent %.2f Mbps in last %.1f sec\n", mbps, elapsed_interval);
+            static int interval_number = 0;
+            printf("[CLIENT] %2d–%2ds: Sent %.2f Mbps\n",
+                interval_number * INTERVAL,
+                (interval_number + 1) * INTERVAL,
+                mbps);
+            interval_number++;
             sent_this_interval = 0;
-            gettimeofday(&interval_start, NULL);  // Reset interval timer
-        }
+            gettimeofday(&interval_start, NULL);
+}
 
         if (elapsed_total >= TEST_DURATION) {
             break;
