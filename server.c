@@ -8,7 +8,7 @@
 
 #define PORT 5555
 #define BUFFER_SIZE (131072) //o server lambanei ara to read
-#define TEST_DURATION 32
+#define TEST_DURATION 34
 #define INTERVAL 2
 #define SA struct sockaddr
 

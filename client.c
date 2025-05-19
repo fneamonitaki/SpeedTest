@@ -12,7 +12,7 @@
 //#define SERVER_IP "192.168.1.5" //local IP for demo
 #define SERVER_PORT 5555
 #define BUFFER_SIZE (16384) // o client stelnei ara to write
-#define TEST_DURATION 30  // seconds
+#define TEST_DURATION 32  // seconds
 #define INTERVAL 2        // seconds
 #define SA struct sockaddr
 
