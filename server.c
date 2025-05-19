@@ -6,8 +6,8 @@
 #include <netinet/in.h>
 #include <sys/time.h>
 
-#define PORT 12345
-#define BUFFER_SIZE (64 * 1024)
+#define PORT 5555
+#define BUFFER_SIZE (131072) //o server lambanei ara to read
 #define TEST_DURATION 30
 #define INTERVAL 2
 #define SA struct sockaddr
@@ -70,7 +70,7 @@ int main() {
     
 
     memset(&servaddr, 0, sizeof(servaddr));
-    servaddr.sin_family = AF_INET;
+    servaddr.sin_family = AF_INET; //IPv4
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);  // Accept from any IP
     servaddr.sin_port = htons(PORT);
 

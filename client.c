@@ -8,9 +8,10 @@
 #include <sys/time.h>
 
 //#define SERVER_IP "147.27.116.242" // <-- CHANGE to your server's IP
-#define SERVER_IP "127.0.01.1" //;ocal IP for demo
-#define SERVER_PORT 12345
-#define BUFFER_SIZE (64 * 1024)
+//#define SERVER_IP "127.0.01.1" //local IP for demo
+#define SERVER_IP "192.168.1.5" //local IP for demo
+#define SERVER_PORT 5555
+#define BUFFER_SIZE (16384) // o client stelnei ara to write
 #define TEST_DURATION 30  // seconds
 #define INTERVAL 2        // seconds
 #define SA struct sockaddr
