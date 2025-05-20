@@ -1,16 +1,13 @@
 # SpeedTest
-how to run: \n
+how to run: 
 
-open 2 terminals
+->Open 2 terminals
 
-in first terminal write:
+->In first terminal write:
+    make 
+    and then ./server
 
-gcc server.c -o server
+->In the second terminal write:
+    ./client
 
-and then ./server
-
-and in the other terminal write
-
-gcc client.c -o client
-
-and run ./client
+When you are done with the SpeedTest write "make clean" if you want to remove the executables!
