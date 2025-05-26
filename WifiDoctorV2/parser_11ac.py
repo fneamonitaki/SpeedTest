@@ -57,7 +57,11 @@ def extract_all_data(pcap_file: str) -> list:
             'snr': None,
             'ssid': None,
             'timestamp': None,
-            'tsf_timestamp': None
+            'tsf_timestamp': None,
+            'frame_length': None,
+            'radiotap_length': None,
+            'wlan_header_length': None,
+            'payload_length': None
         }
 
         if hasattr(packet, 'wlan'):
@@ -66,14 +70,19 @@ def extract_all_data(pcap_file: str) -> list:
             packet_data_all['transmitter_mac'] = getattr(packet.wlan, 'ta', None)
             packet_data_all['receiver_mac'] = getattr(packet.wlan, 'ra', None)
             packet_data_all['frame_type_subtype'] = getattr(packet.wlan, 'fc_type_subtype', None)
-            packet_data_all['retry_flag'] = getattr(packet.wlan, 'fc.retry', None)
+            packet_data_all['retry_flag'] = getattr(packet.wlan, 'fc_retry', None)
+            if hasattr(packet.wlan, 'hdr_len'):
+                try:
+                    packet_data_all['wlan_header_length'] = int(packet.wlan.hdr_len)
+                except ValueError:
+                    packet_data_all['wlan_header_length'] = None
 
         if hasattr(packet, 'wlan_radio'):
             packet_data_all['phy_type'] = getattr(packet.wlan_radio, 'phy', None)
-            packet_data_all['mcs_index'] = getattr(packet.wlan_radio, '11ac.mcs_index', None)
+            packet_data_all['mcs_index'] = getattr(packet.wlan_radio, '11ac.mcs', None)
             bandwidth = getattr(packet.wlan_radio, '11ac.bandwidth', None)
             packet_data_all['bandwidth'] = "20 MHz" if bandwidth == "0" else bandwidth
-            packet_data_all['spatial_streams'] = getattr(packet.wlan_radio, '11ac.num_sts', None)
+            packet_data_all['spatial_streams'] = getattr(packet.wlan_radio, '11ac.nss', None)
             packet_data_all['short_gi'] = getattr(packet.wlan_radio, '11ac.short_gi', None)
             packet_data_all['data_rate'] = getattr(packet.wlan_radio, 'data_rate', None)
             packet_data_all['channel'] = getattr(packet.wlan_radio, 'channel', None)
@@ -83,8 +92,33 @@ def extract_all_data(pcap_file: str) -> list:
 
         if hasattr(packet, 'radiotap'):
             packet_data_all['frequency'] = getattr(packet.radiotap, 'channel_freq', None)
+            try:
+                packet_data_all['radiotap_length'] = int(packet.radiotap.length)
+            except (AttributeError, ValueError):
+                packet_data_all['radiotap_length'] = None
 
         packet_data_all['sniff_time'] = getattr(packet, 'sniff_time', None)
+
+        # Frame length
+        try:
+            packet_data_all['frame_length'] = int(packet.length)
+        except (AttributeError, ValueError):
+            packet_data_all['frame_length'] = None
+                # Compute payload length if not available directly
+        if hasattr(packet, 'data') and hasattr(packet.data, 'len'):
+            try:
+                packet_data_all['payload_length'] = int(packet.data.len)
+            except ValueError:
+                packet_data_all['payload_length'] = None
+        else:
+            try:
+                frame = packet_data_all['frame_length'] or 0
+                rtap = packet_data_all['radiotap_length'] or 0
+                wlan = packet_data_all['wlan_header_length'] or 0
+                computed_payload = frame - rtap - wlan
+                packet_data_all['payload_length'] = max(computed_payload, 0)
+            except Exception:
+                packet_data_all['payload_length'] = None
 
         #this is for ssid eg TUC   
         if 'wlan.mgt' in packet:
