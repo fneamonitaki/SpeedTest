@@ -1,6 +1,6 @@
 import pathlib
-from parser_11n import extract_all_data as extract_all_data_11n, add_rate_gap as add_rate_gap_11n
-from parser_11ac import extract_all_data as extract_all_data_11ac, add_rate_gap as add_rate_gap_11ac
+from parser_11n import extract_all_data as extract_all_data_11n, add_rate_gap as add_rate_gap_11n, filter_for_1_2 as filter_11n
+from parser_11ac import extract_all_data as extract_all_data_11ac, add_rate_gap as add_rate_gap_11ac, filter_for_1_2 as filter_11ac
 from wifi_analysis_engine import run_analysis
 
 
@@ -60,11 +60,15 @@ def run_wifi_doctor():
 
     if(parser_choice==1):
         packets = add_rate_gap_11n(packets)
+        filtered_packets = filter_11n(packets, "f8:aa:3f:92:dd:16", "dc:e9:94:2a:68:31", "0x0028")
     else:
         packets = add_rate_gap_11ac(packets)
+        filtered_packets = filter_11ac(packets, "f8:aa:3f:92:dd:1b", "dc:e9:94:2a:68:31", "0x0028")
     
+
+
     print("\n[INFO] Analyzing metrics...")
-    run_analysis(packets)
+    run_analysis(filtered_packets)
     print("\n[INFO] Wi-Fi Doctor analysis complete.")
 
 
