@@ -99,18 +99,25 @@ def compute_avg_rssid(rssid_log, target_channel):
     values = [rssid for _, ch, rssid in rssid_log if int(ch) == target_channel]
     return sum(values) / len(values) if values else 0
 
-def compute_theoretical_throughput(rate, loss, gap=None, rssid=0.0):
+def compute_theoretical_throughput(rate, loss, gap=None, rssid=0.0, avg_payload=None, avg_total=None):
     if rate is None or loss is None:
         return None
     penalty = compute_rate_gap_penalty(gap)
     utilization_penalty = 1 - min(rssid, 1.0)
-    return rate * (1 - loss) * utilization_penalty * penalty
+
+    if avg_payload is not None and avg_total and avg_total > 0:
+        payload_efficiency = avg_payload / avg_total
+    else:
+        payload_efficiency = 1.0  # fallback to ideal
+
+    return rate * (1 - loss) * penalty * utilization_penalty * payload_efficiency
 
 def plot_metric(results, key, ylabel, title, filename):
     times = [r['timestamp'] for r in results]
     values = [r[key] for r in results]
-    print(f"\n{key.upper()} values:")
-    print(values)
+    #debug
+    #print(f"\n{key.upper()} values:")
+    #print(values)
     plt.figure(figsize=(10, 5))
     plt.plot(times, values, marker='o')
     plt.title(title)
@@ -153,8 +160,14 @@ def run_analysis(packet_data):
             rate = compute_data_rate_avg(window_packets)
             loss = compute_frame_loss(window_packets)
             gap = compute_rate_gap_avg(window_packets)
-            tput = compute_theoretical_throughput(rate, loss, gap, avg_rssid)
-            print(f"rate: {rate}, loss: {loss}, gap: {gap}, rssid: {avg_rssid}")
+
+            payloads = [pkt['payload_length'] for pkt in window_packets if pkt.get('payload_length') is not None]
+            totals = [pkt['frame_length'] for pkt in window_packets if pkt.get('frame_length') is not None]
+
+            avg_payload = sum(payloads) / len(payloads) if payloads else None
+            avg_total = sum(totals) / len(totals) if totals else None
+
+            tput = compute_theoretical_throughput(rate, loss, gap, avg_rssid, avg_payload, avg_total)
             results.append({
                 'timestamp': current_end,
                 'avg_rssi': rssi,
