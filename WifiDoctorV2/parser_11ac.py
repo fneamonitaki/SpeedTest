@@ -202,22 +202,26 @@ def find_expected_mcs_index(signal_strength, spatial_streams):
         else:
             return 0
     if spatial_streams == 2:
-        if signal_strength >= -64:
-            return 15   
+        if signal_strength >= -57:
+            return 9  
+        elif -59 <= signal_strength < -57:
+            return 8 
+        elif -64 <= signal_strength < -59:
+            return 7
         elif -65 <= signal_strength < -64:
-            return 14 
+            return 6
         elif -66 <= signal_strength < -65:
-            return 13
+            return 5
         elif -70 <= signal_strength < -66:
-            return 12
+            return 4
         elif -74 <= signal_strength < -70:
-            return 11
+            return 3
         elif -77 <= signal_strength < -74:
-            return 10
+            return 2
         elif -79 <= signal_strength < -77:
-            return 9
+            return 1
         else:
-            return 8
+            return 0
     if spatial_streams == 3:
         if signal_strength >= -64:
             return 23  
