@@ -1,14 +1,14 @@
 import os
 import pathlib
-from parser_all import extract_all_data, add_rate_gap, filter_for_1_2
-from parser_for_testings import extract_all_data_testing_pcap as extract_testing
+from parser_11n import extract_all_data, add_rate_gap, filter_for_1_2
+from parser_11ac import extract_all_data as extract_testing
 from wifi_analysis_engine import run_analysis
 
 
 def get_parser_choice():
     print("\nSelect Parser:")
-    print("1) parser_all - 802.11n")
-    print("2) parser_for_testing - 802.11ac")
+    print("1) parser_11n - 802.11n (for 2.4 GHz)")
+    print("2) parser_11ac - 802.11ac (for 5 GHz)")
     print("3) Exit")
     return input("Enter your choice: ").strip()
 
