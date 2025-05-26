@@ -1,7 +1,6 @@
-import os
 import pathlib
-from parser_11n import extract_all_data, add_rate_gap, filter_for_1_2
-from parser_11ac import extract_all_data as extract_testing
+from parser_11n import extract_all_data as extract_all_data_11n, add_rate_gap as add_rate_gap_11n
+from parser_11ac import extract_all_data as extract_all_data_11ac, add_rate_gap as add_rate_gap_11ac
 from wifi_analysis_engine import run_analysis
 
 
@@ -38,8 +37,8 @@ def get_pcap_file():
 
 def run_wifi_doctor():
     parser_map = {
-        "1": (extract_all_data, "parser_all"),
-        "2": (extract_testing, "parser_for_testings")
+        "1": (extract_all_data_11n, "parser_all"),
+        "2": (extract_all_data_11ac, "parser_for_testings")
     }
 
     parser_choice = get_parser_choice()
@@ -58,8 +57,12 @@ def run_wifi_doctor():
 
     print(f"\n[INFO] Running Wi-Fi Doctor using {parser_name} on {pcap_path}")
     packets = extract_func(pcap_path)
-    packets = add_rate_gap(packets)
 
+    if(parser_choice==1):
+        packets = add_rate_gap_11n(packets)
+    else:
+        packets = add_rate_gap_11ac(packets)
+    
     print("\n[INFO] Analyzing metrics...")
     run_analysis(packets)
     print("\n[INFO] Wi-Fi Doctor analysis complete.")
