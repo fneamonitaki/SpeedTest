@@ -41,6 +41,8 @@ void handle_client(int client_fd) {
     size_t total_received = 0;
     size_t received_this_interval = 0;
 
+    int interval_number = 0;
+
     while (1) {
         //read data from client
         ssize_t received = recv(client_fd, buffer, BUFFER_SIZE, 0);
@@ -57,33 +59,35 @@ void handle_client(int client_fd) {
 
         //start a current timer 
         gettimeofday(&current_time, NULL);
+        
 
         //The following code is for calculate timing
         //->measuring elapsed time with microsecond precision
         double elapsed_total = (current_time.tv_sec - start_time.tv_sec) +
                                (current_time.tv_usec - start_time.tv_usec) / 1000000.0;
 
-        double elapsed_interval = (current_time.tv_sec - interval_start.tv_sec) +
-                                  (current_time.tv_usec - interval_start.tv_usec) / 1000000.0;
+        //double elapsed_interval = (current_time.tv_sec - interval_start.tv_sec) +
+                               //   (current_time.tv_usec - interval_start.tv_usec) / 1000000.0;
+        
 
-        //every 2 secs print throuput                           
+        double elapsed_interval = (current_time.tv_sec - interval_start.tv_sec) +
+                          (current_time.tv_usec - interval_start.tv_usec) / 1000000.0;
+
         if (elapsed_interval >= INTERVAL) {
             double mbps = bytes_to_mbps(received_this_interval, elapsed_interval);
-            static int interval_number = 0;
             printf("[SERVER] %2d–%2ds: Received %.2f Mbps\n",
                 interval_number * INTERVAL,
                 (interval_number + 1) * INTERVAL,
                 mbps);
+
             interval_number++;
-            //reset the interval timer and counter
             received_this_interval = 0;
             gettimeofday(&interval_start, NULL);
-}
-
-        //this is ending the loop after 30 secs
-        if (elapsed_total > TEST_DURATION)
-            break;
-    }
+        }
+                //this is ending the loop after 30 secs
+                if (elapsed_total > TEST_DURATION)
+                    break;
+            }
 
     //at the end we calculate the total average throughput and print it
     double avg_mbps = bytes_to_mbps(total_received, TEST_DURATION);
